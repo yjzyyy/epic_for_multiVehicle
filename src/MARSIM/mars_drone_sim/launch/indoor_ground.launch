@@ -1,0 +1,99 @@
+<launch>
+        <arg name="use_gpu_" value="true" />
+
+        <arg name="sensing_horizon" />
+
+
+
+
+        <arg name="world_name" value="indoor"/>
+        <arg name="vehicleHeight" default="0.75"/>
+        <arg name="cameraOffsetZ" default="0"/>
+        <arg name="vehicleX" default="0"/>
+        <arg name="vehicleY" default="0"/>
+        <arg name="terrainZ" default="0"/>
+        <arg name="vehicleYaw" default="0"/>
+        <arg name="gazebo_gui" default="false"/>
+        <arg name="checkTerrainConn" default="false"/>
+
+
+
+
+        <arg name="vehicle_num" value="1" />
+        <!-- <arg name="lidar_pitch" value="0.0"/> -->
+        <arg name="lidar_pitch" value="40.0" />
+
+        <arg name="frame_id" value="world" />
+        <arg name="global_cloud_topic" value="/map_generator/global_cloud" />
+        <arg name="odom_topic" value="/lidar_slam/odom" />
+
+
+        <!-- <arg name="map_name" value="$(find map_generator)/resource/factory.pcd"/> -->
+        <!-- <arg name="map_name" value="$(find map_generator)/resource/cave.pcd" /> -->
+        <arg name="map_name" value="$(find map_generator)/resource/indoor.pcd" />
+        <arg name="downsample_resolution" value="0.1" />
+        <arg name="use_uav_extra_model" value="0" />
+
+        <node pkg="map_generator" name="map_pub" type="map_pub" output="screen"
+                args="$(arg map_name)">
+                <param name="add_boundary" value="0" />
+                <param name="is_bridge" value="0" />
+                <param name="downsample_res" value="0.01" />
+                <param name="map_offset_x" value="0.0" />
+                <param name="map_offset_y" value="0.0" />
+                <param name="map_offset_z" value="0.0" />
+        </node>
+
+        <group if="$(arg use_gpu_)">
+                <node pkg="map_generator" name="map_pub1" type="map_pub" output="screen"
+                        args="$(arg map_name)">
+                        <param name="downsample_res" value="0.05" />
+                        <param name="map_offset_x" value="0.0" />
+                        <param name="map_offset_y" value="0.0" />
+                        <param name="map_offset_z" value="0.0" />
+                </node>
+        </group>
+        <group unless="$(arg use_gpu_)">
+                <node pkg="map_generator" name="map_pub2" type="map_pub" output="screen"
+                        args="$(arg map_name)">
+                        <param name="downsample_res" value="$(arg downsample_resolution)" />
+                        <param name="map_offset_x" value="0.0" />
+                        <param name="map_offset_y" value="0.0" />
+                        <param name="map_offset_z" value="0.0" />
+                </node>
+        </group>
+
+
+        <include file="$(find terrain_analysis_ext)/launch/terrain_analysis_ext.launch" >
+                <arg name="checkTerrainConn" value="$(arg checkTerrainConn)"/>
+        </include>
+
+
+        
+        <!-- <include file="$(find local_planner)/launch/local_planner.launch" >
+                <arg name="cameraOffsetZ" value="$(arg cameraOffsetZ)"/>
+                <arg name="goalX" value="$(arg vehicleX)"/>
+                <arg name="goalY" value="$(arg vehicleY)"/>
+        </include> -->
+
+        <include file="$(find vehicle_simulator)/launch/vehicle_simulator.launch">
+                <arg name="vehicle_id" value="0" />
+                <arg name="vehicle_num_" value="$(arg vehicle_num)" />
+                <arg name="world_name" value="$(arg world_name)"/>
+                <arg name="vehicleHeight" value="$(arg vehicleHeight)"/>
+                <arg name="cameraOffsetZ" value="$(arg cameraOffsetZ)"/>
+                <arg name="vehicleX" value="$(arg vehicleX)"/>
+                <arg name="vehicleY" value="$(arg vehicleY)"/>
+                <arg name="terrainZ" value="$(arg terrainZ)"/>
+                <arg name="vehicleYaw" value="$(arg vehicleYaw)"/>
+                <arg name="gui" value="$(arg gazebo_gui)"/>
+        </include>
+
+
+        <include file="$(find sensor_scan_generation)/launch/sensor_scan_generation.launch" />
+
+
+        <!-- <node name="rvizvisualisation" pkg="rviz" type="rviz" output="screen"
+   args="-d $(find test_interface)/config/traj.rviz" /> -->
+
+</launch>
