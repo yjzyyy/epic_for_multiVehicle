@@ -7,10 +7,24 @@
 #include <traj_utils/PolyTraj.h>
 #include <visualization_msgs/Marker.h>
 #include <visualization_msgs/MarkerArray.h>
+
+
+#include <geometry_msgs/PoseStamped.h>
+#include <tf/transform_datatypes.h>  // 关键：这个头文件包含了 tf:: 相关的声明
+#include <tf/LinearMath/Quaternion.h>
+
+
 using namespace Eigen;
 using namespace std;
 double replan_time_;
 ros::Publisher pos_cmd_pub, cmd_vis_pub, traj_pub, ground_cmd_pub;
+
+
+
+ros::Publisher direct_pos_pub;
+
+
+
 double max_curvature_ = 0.4; // default, will be overwritten by param if provided
 std::shared_ptr<Trajectory<7>> traj_;
 std::shared_ptr<Trajectory<5>> yaw_traj_;
@@ -237,6 +251,26 @@ void publish_cmd_ground(Vector3d p, Vector3d v , double y, double yd) {
 } // yjz修改  优化地面车辆命令转换逻辑  2025.12.26
 
 
+void publish_direct_position_cmd(const Eigen::Vector3d& pos, double yaw) {
+  // 方案1: 发布自定义的直接位置消息
+  geometry_msgs::PoseStamped direct_cmd;
+  direct_cmd.header.stamp = ros::Time::now();
+  direct_cmd.header.frame_id = "world";
+  direct_cmd.pose.position.x = pos(0);
+  direct_cmd.pose.position.y = pos(1);
+  direct_cmd.pose.position.z = pos(2);
+  
+  // 将yaw转换为四元数
+  tf::Quaternion q = tf::createQuaternionFromYaw(yaw);
+  direct_cmd.pose.orientation.x = q.x();
+  direct_cmd.pose.orientation.y = q.y();
+  direct_cmd.pose.orientation.z = q.z();
+  direct_cmd.pose.orientation.w = q.w();
+  
+  direct_pos_pub.publish(direct_cmd);
+} // yjz修改  添加直接位置命令发布函数  2025.12.30
+
+
 void cmdCallback(const ros::TimerEvent &e, const std::string &vehicle_type) {
   /* no publishing before receive traj_ and have heartbeat */
   if(vehicle_type != "car" && vehicle_type != "drone") {
@@ -299,7 +333,8 @@ void cmdCallback(const ros::TimerEvent &e, const std::string &vehicle_type) {
   else if(vehicle_type == "car")
   {
     // std::cout << "desired: pos: " << pos.transpose() << " vel: " << vel.transpose() << " yaw: " << yaw_yawdot.first << " yawdot: " << yaw_yawdot.second << std::endl;
-    publish_cmd_ground(pos, vel, yaw_yawdot.first, yaw_yawdot.second);
+    // publish_cmd_ground(pos, vel, yaw_yawdot.first, yaw_yawdot.second);
+    publish_direct_position_cmd(pos, yaw_yawdot.first);//yjz修改  发布直接位置命令  2025.12.30
   }
 
   if (traj_cmd_.size() == 0)
@@ -421,8 +456,9 @@ int main(int argc, char **argv) {
   ros::Timer vis_timer = nh.createTimer(ros::Duration(0.25), visCallback);
   pos_cmd_pub = nh.advertise<quadrotor_msgs::PositionCommand>("/position_cmd", 50);
 
-  ground_cmd_pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 30);
+  // ground_cmd_pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 30);
 
+  direct_pos_pub = nh.advertise<geometry_msgs::PoseStamped>("/direct_position_cmd", 30); // yjz修改  添加直接位置命令发布器  2025.12.30
 
   cmd_vis_pub = nh.advertise<visualization_msgs::Marker>("/planning/position_cmd_vis", 10);
   traj_pub = nh.advertise<visualization_msgs::MarkerArray>("/planning/travel_traj", 10);

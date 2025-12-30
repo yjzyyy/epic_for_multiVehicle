@@ -92,3 +92,9 @@ RelCostTol: 1.0e-6
 yaw_max_vel: 0.5
 yaw_rho_vis: 10000.0
 yaw_time_fwd: 3.0
+
+
+fsm/replan_time: 1.0                          # 从 0.5 改为 1.0（规划保护时间窗口）
+fsm/replan_time_after_traj_start: 2.0         # 从 0.5 改为 2.0（轨迹起始段保护时间更长）
+fsm/replan_time_before_traj_end: 1.5          # 从 0.5 改为 1.5（轨迹末尾提前规划时间）
+fsm/thresh_replan: -1.0 

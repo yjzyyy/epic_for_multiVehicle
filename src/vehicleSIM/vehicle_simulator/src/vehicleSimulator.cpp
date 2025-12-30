@@ -96,6 +96,30 @@ pcl::VoxelGrid<pcl::PointXYZI> terrainDwzFilter;
 
 ros::Publisher* pubScanPointer = NULL;
 
+ros::Subscriber subDirectPos;
+void directPosHandler(const geometry_msgs::PoseStamped::ConstPtr& posIn) {
+  // 直接更新车辆位置
+  vehicleX = posIn->pose.position.x;
+  vehicleY = posIn->pose.position.y;
+  vehicleZ = posIn->pose.position.z;
+  
+  // 从四元数提取yaw
+  tf::Quaternion q(posIn->pose.orientation.x,
+                   posIn->pose.orientation.y,
+                   posIn->pose.orientation.z,
+                   posIn->pose.orientation.w);
+  tf::Matrix3x3 m(q);
+  double roll, pitch, yaw;
+  m.getRPY(roll, pitch, yaw);
+  vehicleYaw = yaw;
+  
+  // 重置其他状态
+  vehicleSpeed = 0;
+  vehicleYawRate = 0;
+}//yjz修改  添加直接位置命令处理函数  2025.12.30
+
+
+
 void scanHandler(const sensor_msgs::PointCloud2::ConstPtr& scanIn)
 {
   if (!systemInited) {
@@ -334,6 +358,8 @@ int main(int argc, char** argv)
   ros::Subscriber subSpeed = nh.subscribe<geometry_msgs::Twist>("/cmd_vel", 10, speedHandler);
 
   ros::Publisher pubVehicleOdom = nh.advertise<nav_msgs::Odometry>("/vehicle_0/lidar_slam/odom", 5);
+
+  ros::Subscriber subDirectPos = nh.subscribe<geometry_msgs::PoseStamped>("/direct_position_cmd", 10, directPosHandler); // yjz修改  添加直接位置命令订阅器  2025.12.30
 
   nav_msgs::Odometry odomData;
   odomData.header.frame_id = "world";
