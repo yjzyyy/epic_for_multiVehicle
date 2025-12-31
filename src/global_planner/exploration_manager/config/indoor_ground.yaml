@@ -48,9 +48,9 @@ FrontierManager/cluster_minmum_point_num: 5
 # 柱形采样
 ViewpointManager/sample_pillar_min_height: 0.7
 ViewpointManager/sample_pillar_max_height: 0.8
-ViewpointManager/sample_pillar_height_layer_num: 2
+ViewpointManager/sample_pillar_height_layer_num: 4
 ViewpointManager/sample_pillar_min_radius: 1.5
-ViewpointManager/sample_pillar_max_radius: 6.0
+ViewpointManager/sample_pillar_max_radius: 3.0
 ViewpointManager/sample_pillar_radius_layer_num: 3
 ViewpointManager/sample_pillar_circle_sample_num: 8
 ViewpointManager/local_tsp_size: 20
@@ -95,6 +95,6 @@ yaw_time_fwd: 3.0
 
 
 fsm/replan_time: 1.0                          # 从 0.5 改为 1.0（规划保护时间窗口）
-fsm/replan_time_after_traj_start: 2.0         # 从 0.5 改为 2.0（轨迹起始段保护时间更长）
-fsm/replan_time_before_traj_end: 1.5          # 从 0.5 改为 1.5（轨迹末尾提前规划时间）
+fsm/replan_time_after_traj_start: 1.0         # 从 0.5 改为 2.0（轨迹起始段保护时间更长）
+fsm/replan_time_before_traj_end: 0.5         # 从 0.5 改为 1.5（轨迹末尾提前规划时间）
 fsm/thresh_replan: -1.0 
