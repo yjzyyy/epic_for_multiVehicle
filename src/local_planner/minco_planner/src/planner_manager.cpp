@@ -210,6 +210,7 @@ bool FastPlannerManager::planExploreTraj(const vector<Eigen::Vector3f> &path,
   if(vehicle_type == "car") {
       min_bd[2] = 0.0; 
       max_bd[2] = 1.5;
+      
   }
   else {
       min_bd[2] -= 1.0;
@@ -627,7 +628,7 @@ bool FastPlannerManager::flyToSafeRegion(bool is_static, const std::string &vehi
   }
   if(vehicle_type == "car") {
       min_bd[2] = 0.0; 
-      max_bd[2] = 2.5;
+      max_bd[2] = 1.5;
   }
   else {
       min_bd[2] -= 1.0;

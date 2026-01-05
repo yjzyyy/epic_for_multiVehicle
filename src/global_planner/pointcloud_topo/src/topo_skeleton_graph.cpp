@@ -230,7 +230,7 @@ bool TopoGraph::graphSearch(const TopoNode::Ptr &start_node, const TopoNode::Ptr
       for (auto &neighbor : cur_node->neighbors_) {
         // if (!neighbor->reachable_)
         //   continue;
-        if (close_set.find(neighbor) != close_set.end() || neighbor->center_.z() - cur_node->center_.z() > 0.2)
+        if (close_set.find(neighbor) != close_set.end() || neighbor->center_.z() - cur_node->center_.z() > 0.8)
           continue;
 
         float tentative_g_score;

@@ -46,8 +46,8 @@ FrontierManager/cluster_min_radius: 1.0 # DBSCAN 判断邻居的阈值
 FrontierManager/cluster_direction_radius: 0.15 # cos(theta) > cluster_direction_radius
 FrontierManager/cluster_minmum_point_num: 3
 # 柱形采样
-ViewpointManager/sample_pillar_min_height: 0.7
-ViewpointManager/sample_pillar_max_height: 0.8
+ViewpointManager/sample_pillar_min_height: 0.4
+ViewpointManager/sample_pillar_max_height: 1.0
 ViewpointManager/sample_pillar_height_layer_num: 4
 ViewpointManager/sample_pillar_min_radius: 1.5
 ViewpointManager/sample_pillar_max_radius: 3.0
@@ -57,7 +57,7 @@ ViewpointManager/local_tsp_size: 20
 # area
 box_num: 1
 box_0/down: [-5.0, -40.0, -0.2]
-box_0/up: [132.0, 75.2, 2.8]
+box_0/up: [132.0, 75.2, 3.5]
 dead_area_num: 0
 # trajectory param
 max_traj_len: 15.0
