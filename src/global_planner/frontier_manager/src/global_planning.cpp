@@ -164,6 +164,7 @@ void FrontierManager::generateTSPViewpoints(Eigen::Vector3f&center,  vector<Topo
     vp_node->is_viewpoint_ = true;
     vp_node->center_ = tsp_clusters[idx2[i]]->best_vp_;
     vp_node->yaw_ = tsp_clusters[idx2[i]]->best_vp_yaw_;
+    // vp_node->center_.z() = 0.4; //yjz修改   固定视点高度 2026.1.7
     viewpoints.push_back(vp_node);
   }
   ROS_INFO("vp cluster cost: %fms  ,remove unreachable cost: %fms, select vp cost: %fms", (t2 - t1).toSec() * 1000, (t3 - t2).toSec() * 1000,
