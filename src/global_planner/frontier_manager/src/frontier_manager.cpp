@@ -35,6 +35,8 @@ void FrontierManager::init(ros::NodeHandle &nh, LIOInterface::Ptr &lio_interface
               frtp_.cluster_direction_radius_);
   nh.getParam("FrontierManager/cluster_minmum_point_num",
               frtp_.cluster_minmum_point_num_);
+  nh.param("FrontierManager/car_max_update_z", frtp_.car_max_update_z_,
+           std::numeric_limits<float>::infinity());
 
   // frt_cluster_ptr_.reset(new FrontierCluster);
   // frt_cluster_ptr_->init(nh);
@@ -188,12 +190,18 @@ CELL_STATE FrontierManager::get_state(const Eigen::Vector3i &idx) {
 
 void FrontierManager::get_cells_2_update(
     const PointVector &points, vector<Eigen::Vector3i> &cells_2_update) {
+  std::string vehicle_type;
+  nh_.getParam("/exploration_node/vehicle_type", vehicle_type);
+
   cells_2_update.clear();
   std::unordered_set<Eigen::Vector3i, Vector3i_Hash> cells_2_update_set;
   std::unordered_set<Eigen::Vector3i, Vector3i_Hash> updated;
   Eigen::Vector3f lidar_position =
       lidar_map_interface_->ld_->lidar_pose_.cast<float>();
   for (auto &pt : points) {
+    if (vehicle_type == "car" && pt.z > frtp_.car_max_update_z_) {
+      continue;
+    }
     if (!lidar_map_interface_->IsInBox(pt))
       continue;
     if ((pt.getVector3fMap() -

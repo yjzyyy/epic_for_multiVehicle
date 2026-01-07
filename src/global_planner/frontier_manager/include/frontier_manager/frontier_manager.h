@@ -45,6 +45,7 @@ struct FrontierParam {
   int dense_cell_cloud_num_;
   int sparse_cell_cloud_num_;
   int noise_cell_range_;
+  float car_max_update_z_; // 针对地面车辆的高度更新阈值
   float cluster_min_size_;
   Eigen::Vector3f map_min_;
   Eigen::Vector3f map_max_;

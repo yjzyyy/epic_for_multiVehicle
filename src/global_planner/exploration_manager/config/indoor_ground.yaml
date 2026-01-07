@@ -45,6 +45,7 @@ FrontierManager/cluster_min_size: 2.0
 FrontierManager/cluster_min_radius: 1.0 # DBSCAN 判断邻居的阈值
 FrontierManager/cluster_direction_radius: 0.15 # cos(theta) > cluster_direction_radius
 FrontierManager/cluster_minmum_point_num: 3
+FrontierManager/car_max_update_z: 1.0
 # 柱形采样
 ViewpointManager/sample_pillar_min_height: 0.4
 ViewpointManager/sample_pillar_max_height: 1.0
