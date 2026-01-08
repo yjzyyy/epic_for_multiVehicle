@@ -334,7 +334,8 @@ void cmdCallback(const ros::TimerEvent &e, const std::string &vehicle_type) {
   {
     // std::cout << "desired: pos: " << pos.transpose() << " vel: " << vel.transpose() << " yaw: " << yaw_yawdot.first << " yawdot: " << yaw_yawdot.second << std::endl;
     // publish_cmd_ground(pos, vel, yaw_yawdot.first, yaw_yawdot.second);
-    publish_direct_position_cmd(pos, yaw_yawdot.first);//yjz修改  发布直接位置命令  2025.12.30
+    // publish_direct_position_cmd(pos, yaw_yawdot.first);//yjz修改  发布直接位置命令  2025.12.30
+    publish_cmd(pos, vel, acc, jer, yaw_yawdot.first, yaw_yawdot.second);
   }
 
   if (traj_cmd_.size() == 0)
@@ -458,7 +459,7 @@ int main(int argc, char **argv) {
 
   // ground_cmd_pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel", 30);
 
-  direct_pos_pub = nh.advertise<geometry_msgs::PoseStamped>("/direct_position_cmd", 30); // yjz修改  添加直接位置命令发布器  2025.12.30
+  // direct_pos_pub = nh.advertise<geometry_msgs::PoseStamped>("/direct_position_cmd", 30); // yjz修改  添加直接位置命令发布器  2025.12.30
 
   cmd_vis_pub = nh.advertise<visualization_msgs::Marker>("/planning/position_cmd_vis", 10);
   traj_pub = nh.advertise<visualization_msgs::MarkerArray>("/planning/travel_traj", 10);

@@ -69,7 +69,7 @@ void FastPlannerManager::initPlanModules(
   pos_sub = nh.subscribe("/quad_0/lidar_slam/odom", 10,
                          &FastPlannerManager::posCallback, this);
 
-  pos_sub_ground = nh.subscribe("/vehicle_0/lidar_slam/odom", 10,
+  pos_sub_ground = nh.subscribe("/quad_0/lidar_slam/odom", 10,
                          &FastPlannerManager::posCallback, this);
   goal_sub = nh.subscribe("/move_base_simple/goal", 10,
                           &FastPlannerManager::goalCallback, this);

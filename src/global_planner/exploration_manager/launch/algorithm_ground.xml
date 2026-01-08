@@ -8,7 +8,7 @@
 		<!-- Fsm -->
 		<param name="fsm/thresh_replan" value="0.5" type="double" />
 		<param name="fsm/emergency_replan_control_error" value="1.5" type="double" />
-		<param name="fsm/replan_time" value="1.5" type="double" />
+		<param name="fsm/replan_time" value="1.0" type="double" />
 		<param name="fsm/debug_planner" value="false" type="bool" />
 		<!-- Exploration manager -->
 		<param name="exploration/tsp_dir" value="$(find lkh_tsp_solver)/resource" type="string" />

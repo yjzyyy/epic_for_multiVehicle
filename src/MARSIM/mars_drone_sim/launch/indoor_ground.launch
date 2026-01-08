@@ -19,9 +19,9 @@
 
 
 
-        <arg name="vehicle_num" value="1" />
+        <arg name="drone_num" value="1" />
         <!-- <arg name="lidar_pitch" value="0.0"/> -->
-        <arg name="lidar_pitch" value="40.0" />
+        <arg name="lidar_pitch" value="-10.0" />
 
         <arg name="frame_id" value="world" />
         <arg name="global_cloud_topic" value="/map_generator/global_cloud" />
@@ -64,33 +64,44 @@
         </group>
 
 
-        <include file="$(find terrain_analysis_ext)/launch/terrain_analysis_ext.launch" >
-                <arg name="checkTerrainConn" value="$(arg checkTerrainConn)"/>
+        <include file="$(find test_interface)/launch/single_car_with_fuel.xml">
+                <arg name="drone_id" value="0" />
+                <arg name="uav_num_" value="$(arg drone_num)" />
+                <!-- <arg name="lidar_type" value="mid360" /> -->
+                <arg name="lidar_type" value="os128"/>
+                <!-- <arg name="init_x_" value="-3.0"/>
+        <arg name="init_y_" value="19.0"/>
+        <arg name="init_z_" value="1.0"/>
+         -->
+                <!-- <arg name="init_x_" value="-5.0"/>
+        <arg name="init_y_" value="3.0"/>
+        <arg name="init_z_" value="2.0"/> -->
+                <!-- garage -->
+                <!-- <arg name="init_x_" value="0.0"/>
+        <arg name="init_y_" value="2.0"/>
+        <arg name="init_z_" value="3.0"/> -->
+                <!-- cave2 -->
+
+                <!-- <arg name="init_x_" value="5.0"/>
+        <arg name="init_y_" value="0.0"/>
+        <arg name="init_z_" value="2.0"/> -->
+                <!-- errt cave2 -->
+                <!-- <arg name="init_x_" value="20.0"/>
+        <arg name="init_y_" value="-38.0"/>
+        <arg name="init_z_" value="2.0"/> -->
+                <!-- sysu forest -->
+                <arg name="init_x_" value="0.0" />
+                <arg name="init_y_" value="0.0" />
+                <arg name="init_z_" value="0.7" />
+                <arg name="init_yaw" value="0.0" />
+                <arg name="lidar_pitch_" value="$(arg lidar_pitch)" />
+                <arg name="map_name_" value="$(arg map_name)" />
+                <arg name="downsample_resolution_" value="$(arg downsample_resolution)" />
+                <arg name="odom_topic" value="$(arg odom_topic)" />
+                <arg name="use_gpu" value="$(arg use_gpu_)" />
+                <arg name="use_uav_extra_model_" value="$(arg use_uav_extra_model)" />
+                <arg name="sensing_horizon" value="$(arg sensing_horizon)" />
         </include>
-
-
-        
-        <!-- <include file="$(find local_planner)/launch/local_planner.launch" >
-                <arg name="cameraOffsetZ" value="$(arg cameraOffsetZ)"/>
-                <arg name="goalX" value="$(arg vehicleX)"/>
-                <arg name="goalY" value="$(arg vehicleY)"/>
-        </include> -->
-
-        <include file="$(find vehicle_simulator)/launch/vehicle_simulator.launch">
-                <arg name="vehicle_id" value="0" />
-                <arg name="vehicle_num_" value="$(arg vehicle_num)" />
-                <arg name="world_name" value="$(arg world_name)"/>
-                <arg name="vehicleHeight" value="$(arg vehicleHeight)"/>
-                <arg name="cameraOffsetZ" value="$(arg cameraOffsetZ)"/>
-                <arg name="vehicleX" value="$(arg vehicleX)"/>
-                <arg name="vehicleY" value="$(arg vehicleY)"/>
-                <arg name="terrainZ" value="$(arg terrainZ)"/>
-                <arg name="vehicleYaw" value="$(arg vehicleYaw)"/>
-                <arg name="gui" value="$(arg gazebo_gui)"/>
-        </include>
-
-
-        <include file="$(find sensor_scan_generation)/launch/sensor_scan_generation.launch" />
 
 
         <!-- <node name="rvizvisualisation" pkg="rviz" type="rviz" output="screen"

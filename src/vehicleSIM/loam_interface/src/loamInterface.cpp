@@ -119,11 +119,11 @@ int main(int argc, char** argv)
   nhPrivate.getParam("sendTF", sendTF);
   nhPrivate.getParam("reverseTF", reverseTF);
 
-  ros::Subscriber subOdometry = nh.subscribe<nav_msgs::Odometry> ("/vehicle_0/lidar_slam/odom", 5, odometryHandler);
+  ros::Subscriber subOdometry = nh.subscribe<nav_msgs::Odometry> ("/quad_0/lidar_slam/odom", 5, odometryHandler);
 
   ros::Subscriber subLaserCloud = nh.subscribe<sensor_msgs::PointCloud2> (registeredScanTopic, 5, laserCloudHandler);
 
-  ros::Publisher pubOdometry = nh.advertise<nav_msgs::Odometry> ("/vehicle_0/lidar_slam/odom", 5);
+  ros::Publisher pubOdometry = nh.advertise<nav_msgs::Odometry> ("/quad_0/lidar_slam/odom", 5);
   pubOdometryPointer = &pubOdometry;
 
   tf::TransformBroadcaster tfBroadcaster;
