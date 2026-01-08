@@ -1020,7 +1020,7 @@ inline bool FrontierManager::isInBox(const Eigen::Vector3f &pt) {
   return lidar_map_interface_->IsInBox(pt);
 }
 
-void FrontierManager::selectBestViewpoint(ClusterInfo::Ptr &cluster) {
+void FrontierManager::selectBestViewpoint(ClusterInfo::Ptr &cluster, Eigen::Vector3f& center) {
   if (cluster->vp_clusters_.empty()) {
     return;
   }
@@ -1036,6 +1036,20 @@ void FrontierManager::selectBestViewpoint(ClusterInfo::Ptr &cluster) {
   ray_caster.setParams(double(frtp_.cell_size_), frtp_.map_min_.cast<double>());
   for (int i = 0; i < vps.size(); i++) {
     Eigen::Vector3f vp = vps[i].getVector3fMap();
+
+
+
+    Eigen::Vector3f cluster_to_vp = vp - cluster->center_;
+    Eigen::Vector3f cluster_to_vehicle = center - cluster->center_;
+    double is_in_same_size = cluster_to_vp.x() * cluster_to_vehicle.x() +
+                             cluster_to_vp.y() * cluster_to_vehicle.y() +
+                             cluster_to_vp.z() * cluster_to_vehicle.z();
+    if(is_in_same_size <= 0){
+      continue;
+    }//yjz修改 判断当前视点是否在地图内 2026.1.8
+
+
+
     for (int j = 0; j < cluster->cells_.size(); j++) {
       Eigen::Vector3f frt = cluster->cells_[j].getVector3fMap();
       Eigen::Vector3f dir = (frt - vp).cast<float>();

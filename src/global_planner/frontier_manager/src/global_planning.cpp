@@ -119,7 +119,7 @@ void FrontierManager::generateTSPViewpoints(Eigen::Vector3f&center,  vector<Topo
   // clang-format on
   for (int i = 0; i < clusters_can_be_searched_.size(); i++) {
     auto cluster = clusters_can_be_searched_[i];
-    selectBestViewpoint(cluster);
+    selectBestViewpoint(cluster, center);//yjz修改  传入中心点，判断过滤在地图外的视点  2026.1.8
     if (!cluster->is_reachable_)
       continue;
     mtx.lock();

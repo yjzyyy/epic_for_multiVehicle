@@ -249,7 +249,7 @@ private:
                         vector<PointVector> &pts_inside);
   void updateHalfSpaces(vector<ClusterInfo::Ptr> &clusters);
   //                                const vector<float> &bubble_radius);
-  void selectBestViewpoint(ClusterInfo::Ptr &cluster);
+  void selectBestViewpoint(ClusterInfo::Ptr &cluster, Eigen::Vector3f& center);
   void initClusterViewpoints(ClusterInfo::Ptr &cluster);
   void removeUnreachableViewpoints(vector<ClusterInfo::Ptr> &clusters);
   bool isInBox(const PointType &pt);

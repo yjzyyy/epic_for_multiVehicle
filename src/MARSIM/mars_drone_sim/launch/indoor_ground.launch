@@ -21,7 +21,7 @@
 
         <arg name="drone_num" value="1" />
         <!-- <arg name="lidar_pitch" value="0.0"/> -->
-        <arg name="lidar_pitch" value="-10.0" />
+        <arg name="lidar_pitch" value="0.0" />
 
         <arg name="frame_id" value="world" />
         <arg name="global_cloud_topic" value="/map_generator/global_cloud" />
@@ -68,7 +68,7 @@
                 <arg name="drone_id" value="0" />
                 <arg name="uav_num_" value="$(arg drone_num)" />
                 <!-- <arg name="lidar_type" value="mid360" /> -->
-                <arg name="lidar_type" value="os128"/>
+                <arg name="lidar_type" value="mid360"/>
                 <!-- <arg name="init_x_" value="-3.0"/>
         <arg name="init_y_" value="19.0"/>
         <arg name="init_z_" value="1.0"/>
