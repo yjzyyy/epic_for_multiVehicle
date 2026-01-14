@@ -1041,10 +1041,10 @@ void FrontierManager::selectBestViewpoint(ClusterInfo::Ptr &cluster, Eigen::Vect
 
     Eigen::Vector3f cluster_to_vp = vp - cluster->center_;
     Eigen::Vector3f cluster_to_vehicle = center - cluster->center_;
-    double is_in_same_size = cluster_to_vp.x() * cluster_to_vehicle.x() +
+    double is_in_same_dir = cluster_to_vp.x() * cluster_to_vehicle.x() +
                              cluster_to_vp.y() * cluster_to_vehicle.y() +
                              cluster_to_vp.z() * cluster_to_vehicle.z();
-    if(is_in_same_size <= 0){
+    if(is_in_same_dir <= 0){
       continue;
     }//yjz修改 判断当前视点是否在地图内 2026.1.8
 
