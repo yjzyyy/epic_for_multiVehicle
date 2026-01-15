@@ -37,7 +37,7 @@ parallel_astar/insert_node_timeout: 0.002
 FrontierManager/cell_size: 0.4
 FrontierManager/noise_cell_range: 1
 FrontierManager/good_observation_direction_score: 0.8
-FrontierManager/good_observation_force_trust_length: 4.0
+FrontierManager/good_observation_force_trust_length: 6.5
 FrontierManager/good_observation_trust_length: 12.0
 FrontierManager/update_length: 15.0 # 比trust_length长一点就行，多了没用
 FrontierManager/cluster_max_size: 7.5
