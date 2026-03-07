@@ -620,6 +620,8 @@ bool FrontierManager::is_fov_edge(const PointType &pt) {
 void FrontierManager::updateFrontierClusters(
     vector<ClusterInfo::Ptr> &cluster_updated, vector<int> &cluster_removed) {
   PointVector frt_new;
+  string vehicle_type;
+  nh_.getParam("/exploration_node/vehicle_type", vehicle_type);//2026.03.07 yjz
   auto has_dense_nbr = [&](const Eigen::Vector3i &idx) -> bool {
     for (int i = -1; i <= 1; i++) {
       for (int j = -1; j <= 1; j++) {
@@ -690,7 +692,10 @@ void FrontierManager::updateFrontierClusters(
   for (auto &cell : cells_2_update) {
     PointType pt;
     idx2pos(cell, pt);
-    if (is_gap_point(pt) || is_fov_edge(pt) ||
+    if((pt.getVector3fMap() - lidar_position).norm() < frtp_.good_observation_force_trust_length_){
+      good_observation.push_back(pt);
+    }
+    else if (is_gap_point(pt) || is_fov_edge(pt) ||
         (pt.getVector3fMap() - lidar_position).norm() >
             frtp_.good_observation_trust_length_) {
       bad_observation.push_back(pt);
@@ -731,11 +736,20 @@ void FrontierManager::updateFrontierClusters(
     PointType pt;
     idx2pos(cells_2_update[i], pt);
     float view_distance = (pt.getVector3fMap() - lidar_position).norm();
-    if (view_distance < frtp_.good_observation_force_trust_length_ &&
-        !is_fov_edge(pt)) {
-      // if (view_distance < frtp_.good_observation_force_trust_length_) {
-      frtd_.label_map_[bytes] = DENSE;
-      continue;
+    if(vehicle_type == "car"){
+      if (view_distance < frtp_.good_observation_force_trust_length_) {
+        // if (view_distance < frtp_.good_observation_force_trust_length_) {
+        frtd_.label_map_[bytes] = DENSE;
+        continue;
+      }
+    }
+    else{
+      if (view_distance < frtp_.good_observation_force_trust_length_ &&
+          !is_fov_edge(pt)) {
+        // if (view_distance < frtp_.good_observation_force_trust_length_) {
+        frtd_.label_map_[bytes] = DENSE;
+        continue;
+      }
     }
     bool bad_dir = is_gap_point(pt) || is_fov_edge(pt);
     bool bad_dis = view_distance > frtp_.good_observation_trust_length_;
