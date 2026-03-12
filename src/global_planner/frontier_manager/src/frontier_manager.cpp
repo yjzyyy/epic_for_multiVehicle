@@ -348,6 +348,8 @@ void FrontierManager::update_lidar_pt_gap(const vector<float> &depth) {
 void FrontierManager::cluster_frts(const PointVector &frt_new,
                                    vector<ClusterInfo::Ptr> &new_clusters,
                                    vector<int> &cluster_removed) {
+  string vehicle_type;
+  nh_.getParam("/exploration_node/vehicle_type", vehicle_type);
   cluster_removed.clear();
   PointVector frts2cluster;
   // static int frt_cluser_id = 0;
@@ -483,7 +485,7 @@ void FrontierManager::cluster_frts(const PointVector &frt_new,
     // if (frt_cluster_pt.size() < frtp_.cluster_minmum_point_num_)
     //   continue;
     ClusterInfo::Ptr cluster = make_shared<ClusterInfo>();
-    compute_cluster_info(frt_cluster_pt, frt_cluster_norm, cluster);
+    compute_cluster_info(frt_cluster_pt, frt_cluster_norm, cluster, vehicle_type);
     cluster_list_.push_back(cluster);
     new_clusters.push_back(cluster);
   }
@@ -920,7 +922,7 @@ void FrontierManager::update_updating_aabb(const PointVector &new_frt_pts) {
 
 void FrontierManager::compute_cluster_info(
     const PointVector &frt_pts, const vector<Eigen::Vector3f> &frt_norms,
-    ClusterInfo::Ptr cluster) {
+    ClusterInfo::Ptr cluster, const string &vehicle_type) {
   static int id = 0;
   cluster->center_.setZero();
   cluster->normal_.setZero();
@@ -950,11 +952,21 @@ void FrontierManager::compute_cluster_info(
   cluster->is_dormant_ = false;
   // cluster->is_reachable_ = false;
   cluster->is_reachable_ = true;
-  if ((cluster->box_max_ - cluster->box_min_).maxCoeff() <
-      frtp_.cluster_min_size_)
-    cluster->is_dormant_ = true;
-  if (cluster->cells_.size() < frtp_.cluster_min_size_)
-    cluster->is_dormant_ = true;
+  if(vehicle_type == "car"){
+    float max_xy = max(cluster->box_max_.x() - cluster->box_min_.x(),
+                        cluster->box_max_.y() - cluster->box_min_.y());
+    if (max_xy < frtp_.cluster_min_size_)
+      cluster->is_dormant_ = true;
+     if (cluster->cells_.size() < 3)
+      cluster->is_dormant_ = true;
+  }
+  else{
+    if ((cluster->box_max_ - cluster->box_min_).maxCoeff() <
+        frtp_.cluster_min_size_)
+      cluster->is_dormant_ = true;
+    if (cluster->cells_.size() < frtp_.cluster_min_size_)
+      cluster->is_dormant_ = true;
+  }
   cluster->is_new_cluster_ = true;
 }
 
@@ -1165,21 +1177,43 @@ void FrontierManager::selectBestViewpoint(ClusterInfo::Ptr &cluster, Eigen::Vect
   }
 }
 
-void FrontierManager::initClusterViewpoints(ClusterInfo::Ptr &cluster) {
+void FrontierManager::initClusterViewpoints(ClusterInfo::Ptr &cluster, const string &vehicle_type) {
   cluster->vp_clusters_.clear();
   PointVector vps_init;
-  vps_init.reserve(origin_viewpoints_.size());
-  for (auto &ovp : origin_viewpoints_) {
-    Eigen::Vector3f vp = ovp + cluster->center_;
-    if (lidar_map_interface_->getDisToOcc(vp) < 0.9)
+  if (vehicle_type == "car") {
+    vps_init.reserve(origin_viewpoints_.size());
+    std::cout << "origin vp num: " << origin_viewpoints_.size() << std::endl;
+    for (auto &ovp : origin_viewpoints_) {
+      Eigen::Vector3f vp = ovp + cluster->center_;
+      if(vp[2] < 0 || vp[2] > 1.2)
       continue;
-    if (!isInBox(vp))
-      continue;
-    Eigen::Vector3i idx;
-    graph_->getIndex(vp, idx);
-    if (graph_->getRegionNode(idx) == nullptr)
-      continue;
-    vps_init.emplace_back(vp.x(), vp.y(), vp.z());
+      if (lidar_map_interface_->getDisToOcc(vp) < 0.9)
+        continue;
+      if (!isInBox(vp))
+        continue;
+      Eigen::Vector3i idx;
+      graph_->getIndex(vp, idx);
+      if (graph_->getRegionNode(idx) == nullptr)
+        continue;
+      vps_init.emplace_back(vp.x(), vp.y(), vp.z());
+      
+    }
+    std::cout << "after filter vp num: " << vps_init.size() << std::endl;
+  } else {
+    // Original logic for drone
+    vps_init.reserve(origin_viewpoints_.size());
+    for (auto &ovp : origin_viewpoints_) {
+      Eigen::Vector3f vp = ovp + cluster->center_;
+      if (lidar_map_interface_->getDisToOcc(vp) < 0.9)
+        continue;
+      if (!isInBox(vp))
+        continue;
+      Eigen::Vector3i idx;
+      graph_->getIndex(vp, idx);
+      if (graph_->getRegionNode(idx) == nullptr)
+        continue;
+      vps_init.emplace_back(vp.x(), vp.y(), vp.z());
+    }
   }
   if (vps_init.empty()) {
     cluster->is_reachable_ = false;
@@ -1197,6 +1231,7 @@ void FrontierManager::initClusterViewpoints(ClusterInfo::Ptr &cluster) {
   // DB-SCAN 基于连通性将初始viewpoint聚成几类
   std::vector<int> labels;
   labels.resize(vps_init.size(), -1); // 初始化标签，-1 表示未访问
+  std::cout << "initial vp num: " << vps_init.size() << std::endl;
   auto getNbrs = [&](int idx, vector<int> &nbr_idx) -> int {
     vector<float> sqr_distances;
     PointType p = vps_init[idx];

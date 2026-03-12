@@ -217,7 +217,7 @@ private:
                     vector<int> &cluster_removed);
   void compute_cluster_info(const PointVector &frt_pts,
                             const vector<Eigen::Vector3f> &frt_norms,
-                            ClusterInfo::Ptr cluster);
+                            ClusterInfo::Ptr cluster, const string &vehicle_type);
   bool has_overlap(const Eigen::Vector3f &box_max_,
                    const Eigen::Vector3f &box_min_);
   void project_pts_2_depth_image(PointVector &pts_vec,
@@ -250,7 +250,7 @@ private:
   void updateHalfSpaces(vector<ClusterInfo::Ptr> &clusters);
   //                                const vector<float> &bubble_radius);
   void selectBestViewpoint(ClusterInfo::Ptr &cluster, Eigen::Vector3f& center);
-  void initClusterViewpoints(ClusterInfo::Ptr &cluster);
+  void initClusterViewpoints(ClusterInfo::Ptr &cluster, const string &vehicle_type);
   void removeUnreachableViewpoints(vector<ClusterInfo::Ptr> &clusters);
   bool isInBox(const PointType &pt);
   bool isInBox(const Eigen::Vector3f &pt);

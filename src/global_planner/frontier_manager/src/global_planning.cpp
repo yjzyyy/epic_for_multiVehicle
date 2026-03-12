@@ -48,14 +48,24 @@ private:
 
 void FrontierManager::generateTSPViewpoints(Eigen::Vector3f&center,  vector<TopoNode::Ptr> &viewpoints) {
 
+  string vehicle_type;
+  int tmp_cnt = 0;
+  nh_.getParam("/exploration_node/vehicle_type", vehicle_type);
   unordered_set<ClusterInfo::Ptr> revp_clusters_set; // (re)-generate viewpoints clusters
   vector<float> distance_odom2cluster;
   vector<ClusterInfo::Ptr> old_clusters_within_consideration;
+  std::cout << "cluster_list_ size: " << cluster_list_.size() << std::endl;
   for (auto &cluster : cluster_list_) {
-    if (cluster->is_dormant_ || !cluster->is_reachable_)
+    if (cluster->is_dormant_ || !cluster->is_reachable_){
+      std::cout << "cluster " << cluster->id_ << " is dormant or unreachable, skip. dormant: " << cluster->is_dormant_ << " reachable: " << cluster->is_reachable_ << std::endl;
+      ++tmp_cnt;
+      std::cout << "dormant or unreachable cluster num: " << tmp_cnt << std::endl;
+      std:: cout << "cell size: " << cluster->cells_.size() << std::endl;
       continue;
-    if (revp_clusters_set.count(cluster))
+    }
+    if (revp_clusters_set.count(cluster)){
       continue;
+    }
     old_clusters_within_consideration.push_back(cluster);
     // float distance =
     // (center- cluster->center_).norm() + fabs(graph_->odom_node_->center_.z() - cluster->center_.z()) * 0.5;
@@ -85,7 +95,7 @@ void FrontierManager::generateTSPViewpoints(Eigen::Vector3f&center,  vector<Topo
   #pragma omp parallel for
   // clang-format on
   for (auto &cluster : revp_clusters_vec) {
-    initClusterViewpoints(cluster);
+    initClusterViewpoints(cluster, vehicle_type);
   }
   ros::Time t2 = ros::Time::now();
   // cout << "init cluster viewpoint cost: " << (t2 - t1).toSec() * 1000 << "ms" << endl;

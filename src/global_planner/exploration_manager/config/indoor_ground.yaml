@@ -14,8 +14,8 @@ FrontierManager/view_frt: true
 # graph
 bubble_topo/min_x: 0.6
 bubble_topo/min_y: 0.6
-bubble_topo/min_z: 0.2
-bubble_topo/bubble_min_radius: 0.61
+bubble_topo/min_z: 0.3
+bubble_topo/bubble_min_radius: 0.3
 bubble_topo/init_region_size_x: 2.5
 bubble_topo/init_region_size_y: 2.5
 bubble_topo/init_region_size_z: 2.0
@@ -34,26 +34,27 @@ lidar_perception/fov_viewpoint_down: -5.0
 lidar_perception/max_ray_length: 18
 parallel_astar/update_connection_timeout: 0.002
 parallel_astar/insert_node_timeout: 0.002
-FrontierManager/cell_size: 0.4
+FrontierManager/cell_size: 0.2
+#这个改小一点的话粒度更细，前沿点不容易被判断为is_dormant_，这版代码还没改标DENSE的逻辑，无人车改成附近的都优先标记为DENSE试试  2026.3.9  yjz
 FrontierManager/noise_cell_range: 1
 FrontierManager/good_observation_direction_score: 0.8
 FrontierManager/good_observation_force_trust_length: 6.5
 FrontierManager/good_observation_trust_length: 12.0
 FrontierManager/update_length: 15.0 # 比trust_length长一点就行，多了没用
 FrontierManager/cluster_max_size: 7.5
-FrontierManager/cluster_min_size: 2.0
+FrontierManager/cluster_min_size: 1.5
 FrontierManager/cluster_min_radius: 1.0 # DBSCAN 判断邻居的阈值
 FrontierManager/cluster_direction_radius: 0.15 # cos(theta) > cluster_direction_radius
 FrontierManager/cluster_minmum_point_num: 5
 FrontierManager/car_max_update_z: 2.0
 # 柱形采样
-ViewpointManager/sample_pillar_min_height: 0.4
-ViewpointManager/sample_pillar_max_height: 1.0
-ViewpointManager/sample_pillar_height_layer_num: 4
-ViewpointManager/sample_pillar_min_radius: 1.5
-ViewpointManager/sample_pillar_max_radius: 3.0
+ViewpointManager/sample_pillar_min_height: -0.2
+ViewpointManager/sample_pillar_max_height: 1.5
+ViewpointManager/sample_pillar_height_layer_num: 3
+ViewpointManager/sample_pillar_min_radius: 2.5
+ViewpointManager/sample_pillar_max_radius: 4.0
 ViewpointManager/sample_pillar_radius_layer_num: 3
-ViewpointManager/sample_pillar_circle_sample_num: 8
+ViewpointManager/sample_pillar_circle_sample_num: 6
 ViewpointManager/local_tsp_size: 20
 # area
 box_num: 1
@@ -95,7 +96,7 @@ yaw_rho_vis: 10000.0
 yaw_time_fwd: 3.0
 
 
-fsm/replan_time: 1.0                          # 从 0.5 改为 1.0（规划保护时间窗口）
+fsm/replan_time: 1.0                         # 从 0.5 改为 1.0（规划保护时间窗口）
 fsm/replan_time_after_traj_start: 1.0         # 从 0.5 改为 2.0（轨迹起始段保护时间更长）
-fsm/replan_time_before_traj_end: 0.5         # 从 0.5 改为 1.5（轨迹末尾提前规划时间）
+fsm/replan_time_before_traj_end: 1.0        # 从 0.5 改为 1.5（轨迹末尾提前规划时间）
 fsm/thresh_replan: -1.0 
